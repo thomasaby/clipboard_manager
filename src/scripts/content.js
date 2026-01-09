@@ -12,10 +12,8 @@ document.addEventListener('copy', () => {
 
     if (runtime && typeof runtime.sendMessage === 'function') {
       runtime.sendMessage({ type: "ADD_ITEM", text: selectedText });
-      console.log("Copied text sent:", selectedText);
     } else if (typeof window.postMessage === 'function') {
       window.postMessage({ direction: "FROM_PAGE", type: "ADD_ITEM", text: selectedText }, "*");
-      console.log("Copied text posted to page (fallback):", selectedText);
     } else {
       console.warn('ClipSuit(content): no runtime available to send message');
     }

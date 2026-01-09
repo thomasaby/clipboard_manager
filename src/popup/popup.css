@@ -156,7 +156,44 @@ body::after {
 /* ===== List ===== */
 #list-container {
   padding: 8px 0 10px;
+  overflow-y: auto;
+  position: relative;
+  /* Hide native scrollbars */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
 }
+#list-container::-webkit-scrollbar {
+  display: none; /* Chrome, Edge, Safari */
+}
+
+/* Custom scroll indicator (image) */
+#scroll-indicator {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+#scroll-indicator.visible {
+  opacity: 1;
+}
+
+#scroll-thumb {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.45);
+}
+
+/* Shortcuts UI removed */
 
 /* ===== Items (Fabric Panels) ===== */
 .item {

@@ -1,6 +1,52 @@
 document.addEventListener('DOMContentLoaded', () => {
   const listContainer = document.getElementById('list-container');
   const searchInput = document.getElementById('search');
+  // Custom scroll indicator elements (created once)
+  const scrollIndicator = document.createElement('div');
+  scrollIndicator.id = 'scroll-indicator';
+  const scrollThumb = document.createElement('img');
+  scrollThumb.id = 'scroll-thumb';
+  scrollThumb.alt = '';
+  scrollIndicator.appendChild(scrollThumb);
+
+  // Append indicator after initial render (renderItems clears innerHTML)
+  function attachIndicator() {
+    if (!listContainer) return;
+    // Ensure not duplicated
+    const existing = document.getElementById('scroll-indicator');
+    if (existing) return;
+    listContainer.appendChild(scrollIndicator);
+  }
+
+  // Set icon source
+  const clipIconUrl = chrome.runtime.getURL('icons/96x96_ClipSuit.png');
+  scrollThumb.src = clipIconUrl;
+
+  function updateScrollIndicator() {
+    if (!listContainer) return;
+    const indicator = document.getElementById('scroll-indicator');
+    if (!indicator) return;
+    const thumb = indicator.querySelector('#scroll-thumb');
+    const scrollHeight = listContainer.scrollHeight;
+    const clientHeight = listContainer.clientHeight;
+    if (scrollHeight <= clientHeight) {
+      indicator.classList.remove('visible');
+      return;
+    }
+    // Show indicator
+    indicator.classList.add('visible');
+
+    const thumbRect = thumb.getBoundingClientRect();
+    const thumbHeight = thumbRect.height || 20;
+
+    const maxScrollTop = scrollHeight - clientHeight;
+    const maxTop = clientHeight - thumbHeight - 8; // padding
+    const top = (listContainer.scrollTop / Math.max(1, maxScrollTop)) * Math.max(0, maxTop) + 8;
+    indicator.style.top = `${top}px`;
+  }
+
+  // Update on scroll
+  listContainer.addEventListener('scroll', () => updateScrollIndicator());
 
   const renderItems = (filter = "") => {
     try {
@@ -44,6 +90,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             listContainer.appendChild(div);
           });
+          // re-attach the indicator after rendering items
+          attachIndicator();
+          // small timeout to allow layout and measure
+          setTimeout(updateScrollIndicator, 30);
         } catch (error) {
           console.error('Error rendering items:', error);
           listContainer.innerHTML = '<div style="color: red; padding: 10px;">Error loading clipboard history</div>';

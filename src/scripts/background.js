@@ -4,7 +4,6 @@ const MAX_ITEMS = 200;
 chrome.runtime.onInstalled.addListener(() => {
   try {
     // Graceful fallback if icons are missing
-    console.log('ClipSuit extension initialized');
   } catch (error) {
     console.warn('Error during initialization:', error);
   }
@@ -12,7 +11,6 @@ chrome.runtime.onInstalled.addListener(() => {
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   try {
-    console.log('ClipSuit(background): received message', message);
     if (message.type === "ADD_ITEM") {
       saveToHistory(message.text);
     }
@@ -37,7 +35,6 @@ async function saveToHistory(text) {
       pinned: false
     };
 
-    console.log('ClipSuit(background): saving new item', newItem);
 
     history.unshift(newItem);
 
