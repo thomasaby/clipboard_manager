@@ -117,9 +117,15 @@ document.addEventListener('DOMContentLoaded', () => {
       await commitDelete();
     }
 
+    // Remove the item from storage immediately so undo won't create a duplicate
     const data = await storageGet(['history']);
     const history = data.history || [];
     const index = history.findIndex(i => i.id === item.id);
+
+    if (index !== -1) {
+      history.splice(index, 1);
+      await storageSet({ history });
+    }
 
     pendingDelete = { item, index };
 

@@ -154,17 +154,27 @@ document.addEventListener('DOMContentLoaded', () => {
         await commitDelete();
       }
 
+      // Remove the item from storage immediately so 'undo' won't create a duplicate
       const data = await storageGet(['history']);
       const history = data.history || [];
       const index = history.findIndex(i => i.id === item.id);
 
+      // If found, remove it now
+      if (index !== -1) {
+        history.splice(index, 1);
+        await storageSet({ history });
+      }
+
+      // Save pending deletion state so undo can restore to original position
       pendingDelete = { item, index };
 
-      // Show snackbar
-      snackbarMsg.textContent = item.text.length > 120 ? item.text.slice(0, 120) + '…' : item.text;
-      snackbar.classList.add('show');
+      // Show snackbar with a short preview of the deleted item
+      if (snackbarMsg && snackbar) {
+        snackbarMsg.textContent = item.text.length > 120 ? item.text.slice(0, 120) + '…' : item.text;
+        snackbar.classList.add('show');
+      }
 
-      // Schedule commit
+      // Schedule commit (irreversible) after delay
       deleteTimeout = setTimeout(() => commitDelete(), DELETE_DELAY);
     } catch (error) {
       console.error('Error scheduling delete:', error);
