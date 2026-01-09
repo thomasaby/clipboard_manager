@@ -31,12 +31,18 @@ document.addEventListener('copy', () => {
             // Use callback form to detect async failures via runtime.lastError
             rt.sendMessage({ type: "ADD_ITEM", text: selectedText }, (response) => {
               const lastErr = rt && rt.lastError ? rt.lastError : undefined;
-              if (lastErr && lastErr.message && lastErr.message.includes('invalidated') && !didRetry) {
-                console.warn('ClipSuit(content): extension context invalidated, retrying once...');
-                didRetry = true;
-                setTimeout(send, 250);
-              } else if (lastErr) {
-                console.error('ClipSuit(content): sendMessage failed (async)', lastErr);
+              if (lastErr) {
+                const msg = lastErr.message || '';
+                if (msg.includes('invalidated') && !didRetry) {
+                  console.warn('ClipSuit(content): extension context invalidated, retrying once...');
+                  didRetry = true;
+                  setTimeout(send, 250);
+                } else if (msg.includes('closed before a response') || msg.includes('message port closed')) {
+                  // Benign: background didn't respond synchronously; ignore to avoid noisy logs
+                  console.debug('ClipSuit(content): message port closed before response (ignored)');
+                } else {
+                  console.error('ClipSuit(content): sendMessage failed (async)', lastErr);
+                }
               }
             });
           } catch (asyncSendErr) {
