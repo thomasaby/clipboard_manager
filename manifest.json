@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "ClipSuit",
+  "version": "1.0.0",
+  "description": "ClipSuit - A professional clipboard history manager",
+  "icons": {
+    "128": "icons/128x128_ClipSuit.png",
+    "96": "icons/96x96_ClipSuit.png"
+  },
+  "permissions": ["storage", "clipboardWrite", "clipboardRead"],
+  "action": {
+    "default_icon": {
+      "128": "icons/128x128_ClipSuit.png",
+      "96": "icons/96x96_ClipSuit.png"
+    },
+    "default_popup": "src/popup/popup.html"
+  },
+  "background": {
+    "service_worker": "src/scripts/background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["src/scripts/content.js"]
+    }
+  ],
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+V",
+        "mac": "Command+Shift+V"
+      }
+    }
+  }
+}
