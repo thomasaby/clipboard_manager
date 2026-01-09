@@ -236,8 +236,9 @@ body::after {
   color: var(--text-muted);
 }
 
-/* ===== Pin Button ===== */
-.pin-btn {
+/* ===== Pin & Delete Buttons ===== */
+.pin-btn,
+.delete-btn {
   float: right;
   background: none;
   border: none;
@@ -258,7 +259,8 @@ body::after {
     visibility 120ms ease;
 }
 
-.pin-btn:hover {
+.pin-btn:hover,
+.delete-btn:hover {
   color: var(--text-main);
 }
 
@@ -267,8 +269,14 @@ body::after {
   transform: scale(1.1);
 }
 
-/* Pin icon image sizing */
-.pin-btn .pin-icon {
+/* Delete button specifics: use a slightly warmer hover tint */
+.delete-btn:hover {
+  color: #ff8a66;
+}
+
+/* Icon image sizing */
+.pin-btn .pin-icon,
+.delete-btn .delete-icon {
   width: 20px;
   height: 20px;
   object-fit: contain;
@@ -289,8 +297,9 @@ body::after {
   border-color: rgba(199,143,58,0.6);
 }
 
-/* Show pin button when hovering the item, or always for pinned items */
+/* Show action buttons when hovering the item, or always for pinned items */
 .item:hover .pin-btn,
+.item:hover .delete-btn,
 .item.pinned .pin-btn {
   opacity: 1;
   visibility: visible;

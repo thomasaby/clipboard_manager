@@ -22,9 +22,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const div = document.createElement('div');
             div.className = 'item' + (item.pinned ? ' pinned' : '');
             const pinIconUrl = chrome.runtime.getURL('icons/push-pin.png');
+          const trashIconUrl = chrome.runtime.getURL('icons/trash-bin.png');
             div.innerHTML = `
               <button class="pin-btn ${item.pinned ? 'active' : ''}" data-id="${item.id}" title="${item.pinned ? 'Unpin' : 'Pin'}">
                 <img class="pin-icon" src="${pinIconUrl}" alt="Pin">
+              </button>
+              <button class="delete-btn" data-id="${item.id}" title="Delete">
+                <img class="delete-icon" src="${trashIconUrl}" alt="Delete">
               </button>
               <span class="code-preview">${escapeHtml(item.text)}</span>
               <div class="meta">${item.timestamp}</div>
@@ -32,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Copy to clipboard on click
             div.addEventListener('click', (e) => {
-              if (e.target.closest && e.target.closest('.pin-btn')) return;
+              if (e.target.closest && (e.target.closest('.pin-btn') || e.target.closest('.delete-btn'))) return;
               navigator.clipboard.writeText(item.text).catch(err => {
                 console.error('Failed to copy to clipboard:', err);
               });
@@ -41,6 +45,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Toggle pin on click
             div.querySelector('.pin-btn').addEventListener('click', () => togglePin(item.id));
+
+            // Delete on click (stop propagation so it doesn't copy)
+            div.querySelector('.delete-btn').addEventListener('click', (e) => { e.stopPropagation(); deleteItem(item.id); });
 
             listContainer.appendChild(div);
           });
@@ -65,6 +72,17 @@ document.addEventListener('DOMContentLoaded', () => {
       renderItems(searchInput.value);
     } catch (error) {
       console.error('Error toggling pin:', error);
+    }
+  }
+
+  async function deleteItem(id) {
+    try {
+      const data = await chrome.storage.local.get(['history']);
+      const history = (data.history || []).filter(item => item.id !== id);
+      await chrome.storage.local.set({ history });
+      renderItems(searchInput.value);
+    } catch (error) {
+      console.error('Error deleting item:', error);
     }
   }
 
