@@ -13,18 +13,26 @@ document.addEventListener('DOMContentLoaded', () => {
             i.text.toLowerCase().includes(filter.toLowerCase())
           );
 
-          filtered.forEach(item => {
+          // Show pinned items first while preserving the original recent->old order
+          const pinnedItems = filtered.filter(i => i.pinned);
+          const unpinnedItems = filtered.filter(i => !i.pinned);
+          const ordered = [...pinnedItems, ...unpinnedItems];
+
+          ordered.forEach(item => {
             const div = document.createElement('div');
-            div.className = 'item';
+            div.className = 'item' + (item.pinned ? ' pinned' : '');
+            const pinIconUrl = chrome.runtime.getURL('icons/push-pin.png');
             div.innerHTML = `
-              <button class="pin-btn ${item.pinned ? 'active' : ''}" data-id="${item.id}">📌</button>
+              <button class="pin-btn ${item.pinned ? 'active' : ''}" data-id="${item.id}" title="${item.pinned ? 'Unpin' : 'Pin'}">
+                <img class="pin-icon" src="${pinIconUrl}" alt="Pin">
+              </button>
               <span class="code-preview">${escapeHtml(item.text)}</span>
               <div class="meta">${item.timestamp}</div>
             `;
 
             // Copy to clipboard on click
             div.addEventListener('click', (e) => {
-              if (e.target.classList.contains('pin-btn')) return;
+              if (e.target.closest && e.target.closest('.pin-btn')) return;
               navigator.clipboard.writeText(item.text).catch(err => {
                 console.error('Failed to copy to clipboard:', err);
               });
