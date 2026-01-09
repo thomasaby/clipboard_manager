@@ -25,8 +25,8 @@ async function saveToHistory(text) {
     const data = await chrome.storage.local.get(['history']);
     let history = data.history || [];
 
-    // Don't add if it's an exact duplicate of the most recent item
-    if (history.length > 0 && history[0].text === text) return;
+    // Remove any existing item that exactly matches (case-sensitive)
+    history = history.filter(item => item.text !== text);
 
     const newItem = {
       id: Date.now(),
