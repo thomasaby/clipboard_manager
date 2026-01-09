@@ -9,6 +9,13 @@
     <input type="text" id="search" placeholder="Search snippets...">
   </div>
   <div id="list-container"></div>
+
+  <!-- Undo snackbar shown after delete -->
+  <div id="undo-snackbar" class="snackbar" aria-live="polite">
+    <span id="snackbar-msg">Item deleted</span>
+    <button id="snackbar-undo" class="undo-btn">Undo</button>
+  </div>
+
   <script src="popup.js"></script>
 </body>
 </html>
