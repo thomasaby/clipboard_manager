@@ -7,7 +7,7 @@
     "128": "icons/128x128_ClipSuit.png",
     "96": "icons/96x96_ClipSuit.png"
   },
-  "permissions": ["storage", "clipboardWrite", "clipboardRead"],
+  "permissions": ["storage"],
   "action": {
     "default_icon": {
       "128": "icons/128x128_ClipSuit.png",
